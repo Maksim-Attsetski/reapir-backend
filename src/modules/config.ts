@@ -10,7 +10,7 @@ class Config {
     this.isDev = !node_env || node_env === 'development';
     this.corsOptions = {
       credentials: true,
-      origin: ['http://localhost:3000', 'https://sushi-380521.web.app'],
+      origin: ['http://localhost:3000', 'https://repair-eta.vercel.app'],
     };
     this.accessSecret = 'accessSecret';
     this.refreshSecret = 'refreshSecret';
