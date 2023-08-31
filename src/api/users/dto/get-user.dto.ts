@@ -14,5 +14,6 @@ export class GetUserDto extends UpdateUserDto {
     this.last_name = model?.last_name;
     this.password = model?.password;
     this.phone = model?.phone;
+    this.role = model?.role;
   }
 }

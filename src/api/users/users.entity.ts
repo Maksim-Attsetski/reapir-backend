@@ -8,7 +8,7 @@ export class Users {
   @Prop({ required: true })
   first_name: string;
 
-  @Prop()
+  @Prop({ default: 'Пусто' })
   last_name: string;
 
   @Prop()
@@ -19,6 +19,9 @@ export class Users {
 
   @Prop()
   phone: string;
+
+  @Prop({ default: 'user' })
+  role: string;
 
   @Prop()
   createdAt: number;

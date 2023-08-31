@@ -36,6 +36,7 @@ export class AuthService {
     first_name,
     last_name,
     password,
+    role,
   }: SignupDto): Promise<IAuthResponse> {
     const emailIsExist = await this.usersModel.findOne({ email });
 
@@ -48,6 +49,7 @@ export class AuthService {
       first_name,
       last_name: last_name ?? '',
       password: hashPassword,
+      role: role ?? 'user',
       providers: ['pass'],
       createdAt: Date.now(),
     });
@@ -71,7 +73,6 @@ export class AuthService {
       user = await this.usersModel.create({
         email: userData?.email,
         name: userData?.name || '',
-        avatar: userData?.picture || '',
         providers: ['google'],
         createdAt: Date.now(),
       });
