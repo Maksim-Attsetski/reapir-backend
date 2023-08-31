@@ -12,10 +12,10 @@ export class AuthController {
   setCookies(data: IAuthResponse, res: any) {
     if (data?.tokens?.refreshToken) {
       res?.cookie('refreshToken', data.tokens.refreshToken, {
-        maxAge: 24 * 60 * 60 * 1000 * 30,
-        HttpOnly: true,
-        SameSite: 'None',
-        Secure: true,
+        maxAge: 24 * 60 * 60 * 1000 * 7,
+        httpOnly: true,
+        sameSite: 'None',
+        secure: true,
       });
       return { ...data, tokens: data.tokens.accessToken };
     } else {
