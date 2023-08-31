@@ -50,6 +50,7 @@ export class AuthService {
       last_name: last_name ?? '',
       password: hashPassword,
       role: role ?? 'user',
+      phone: '',
       providers: ['pass'],
       createdAt: Date.now(),
     });
