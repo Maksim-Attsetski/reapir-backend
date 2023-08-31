@@ -7,18 +7,16 @@ import { LoginUserDto, CreateUserDto } from 'src/api';
 @Controller('auth')
 export class AuthController {
   cookieOptions: any;
-  constructor(private readonly authService: AuthService) {
-    this.cookieOptions = {
-      maxAge: 24 * 60 * 60 * 1000 * 30,
-      HttpOnly: true,
-      SameSite: 'None',
-      Secure: true,
-    };
-  }
+  constructor(private readonly authService: AuthService) {}
 
-  setCookies(data: IAuthResponse, res) {
+  setCookies(data: IAuthResponse, res: any) {
     if (data?.tokens?.refreshToken) {
-      res?.cookie('refreshToken', data.tokens.refreshToken, this.cookieOptions);
+      res?.cookie('refreshToken', data.tokens.refreshToken, {
+        maxAge: 24 * 60 * 60 * 1000 * 30,
+        HttpOnly: true,
+        SameSite: 'None',
+        Secure: true,
+      });
       return { ...data, tokens: data.tokens.accessToken };
     } else {
       throw Errors.undefinedError();
