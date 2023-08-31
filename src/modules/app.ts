@@ -5,7 +5,13 @@ import { ServeStaticModule } from '@nestjs/serve-static';
 import { ScheduleModule } from '@nestjs/schedule';
 
 import { join } from 'path';
-import { UsersModule, AuthModule, NewsModule, PriceListModule } from 'src/api';
+import {
+  UsersModule,
+  AuthModule,
+  NewsModule,
+  PriceListModule,
+  ReviewsModule,
+} from 'src/api';
 import Config from './config';
 
 @Module({
@@ -22,6 +28,7 @@ import Config from './config';
     AuthModule,
     NewsModule,
     PriceListModule,
+    ReviewsModule,
   ],
 })
 export class AppModule {}
