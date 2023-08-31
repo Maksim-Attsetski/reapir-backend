@@ -10,8 +10,9 @@ export class AuthController {
   constructor(private readonly authService: AuthService) {
     this.cookieOptions = {
       maxAge: 24 * 60 * 60 * 1000 * 30,
-      httpOnly: true,
+      HttpOnly: true,
       SameSite: 'None',
+      Secure: true,
     };
   }
 
