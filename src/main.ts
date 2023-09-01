@@ -9,8 +9,7 @@ async function loadServer() {
 
   app.enableCors({
     credentials: true,
-    // origin: ['http://localhost:3000', 'https://repair-eta.vercel.app'],
-    origin: 'https://repair-eta.vercel.app',
+    origin: ['http://localhost:3000', 'https://repair-eta.vercel.app'],
   });
   app.use(cookieParser('secret_cookie'));
   app.setGlobalPrefix('/api');
