@@ -24,8 +24,15 @@ export class AuthController {
   }
 
   @Post('login')
-  async login(@Body() loginDto: LoginUserDto, @Res({ passthrough: true }) res) {
-    const data: IAuthResponse = await this.authService.login(loginDto);
+  async login(
+    @Body() loginDto: LoginUserDto,
+    @Req() req: Request,
+    @Res({ passthrough: true }) res,
+  ) {
+    const data: IAuthResponse = await this.authService.login(
+      loginDto,
+      req.headers['user-agent'],
+    );
     return this.setCookies(data, res);
   }
 
@@ -33,25 +40,36 @@ export class AuthController {
   async refresh(@Req() req, @Res({ passthrough: true }) res) {
     const refreshToken = req.cookies?.refreshToken;
 
-    const data: IAuthResponse = await this.authService.refresh(refreshToken);
+    const data: IAuthResponse = await this.authService.refresh(
+      refreshToken,
+      req.headers['user-agent'],
+    );
     return this.setCookies(data, res);
   }
 
   @Post('signup')
   async signup(
     @Body() signupDto: CreateUserDto,
+    @Req() req: Request,
     @Res({ passthrough: true }) res,
   ) {
-    const data: IAuthResponse = await this.authService.signup(signupDto);
+    const data: IAuthResponse = await this.authService.signup(
+      signupDto,
+      req.headers['user-agent'],
+    );
     return this.setCookies(data, res);
   }
 
   @Post('google')
   async authByGoogle(
     @Body() { credential }: { credential: string },
+    @Req() req: Request,
     @Res({ passthrough: true }) res,
   ) {
-    const data: IAuthResponse = await this.authService.authByGoogle(credential);
+    const data: IAuthResponse = await this.authService.authByGoogle(
+      credential,
+      req.headers['user-agent'],
+    );
     return this.setCookies(data, res);
   }
 

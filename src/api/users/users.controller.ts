@@ -6,6 +6,7 @@ import {
   Param,
   Delete,
   Query,
+  Req,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { UpdateUserDto } from './dto/update-user.dto';
@@ -16,7 +17,9 @@ export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
   @Get()
-  findAll(@Query() query: IQuery) {
+  findAll(@Query() query: IQuery, @Req() req: Request) {
+    console.log(req.headers?.['user-agent']);
+
     return this.usersService.findAll(query);
   }
 

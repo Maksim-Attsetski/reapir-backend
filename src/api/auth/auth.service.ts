@@ -31,13 +31,10 @@ export class AuthService {
     @Inject(forwardRef(() => JwtService)) private jwtService: JwtService,
   ) {}
 
-  async signup({
-    email,
-    first_name,
-    last_name,
-    password,
-    role,
-  }: SignupDto): Promise<IAuthResponse> {
+  async signup(
+    { email, first_name, last_name, password, role }: SignupDto,
+    userAgent: string,
+  ): Promise<IAuthResponse> {
     const emailIsExist = await this.usersModel.findOne({ email });
 
     if (emailIsExist)
@@ -55,12 +52,15 @@ export class AuthService {
       createdAt: Date.now(),
     });
 
-    const tokens = await this.generateAndSaveTokens(createdUser);
+    const tokens = await this.generateAndSaveTokens(createdUser, userAgent);
 
     return { user: createdUser, tokens };
   }
 
-  async authByGoogle(credential: string): Promise<IAuthResponse> {
+  async authByGoogle(
+    credential: string,
+    userAgent: string,
+  ): Promise<IAuthResponse> {
     const userData: any = this.jwtService.decode(credential);
 
     if (!userData?.email) throw Errors.undefinedError();
@@ -81,11 +81,14 @@ export class AuthService {
 
     if (!user && !emailIsExist) return;
 
-    const tokens = await this.generateAndSaveTokens(user);
+    const tokens = await this.generateAndSaveTokens(user, userAgent);
     return { user, tokens };
   }
 
-  async login(loginDto: LoginUserDto): Promise<IAuthResponse> {
+  async login(
+    loginDto: LoginUserDto,
+    userAgent: string,
+  ): Promise<IAuthResponse> {
     const user = await this.usersModel.findOne({ email: loginDto.email });
 
     if (!user) throw Errors.notFound('User');
@@ -94,7 +97,7 @@ export class AuthService {
     const isPassEqual = await compare(loginDto.password, user?.password);
     if (!isPassEqual) throw Errors.badRequest('Password is wrong');
 
-    const tokens = await this.generateAndSaveTokens(user);
+    const tokens = await this.generateAndSaveTokens(user, userAgent);
     return { user, tokens };
   }
 
@@ -111,20 +114,27 @@ export class AuthService {
     return { accessToken, refreshToken };
   }
 
-  async saveTokens(userID: string, refreshToken: string): Promise<void> {
-    const token = await this.tokenModel.findOne({ userID });
+  async saveTokens(
+    userID: string,
+    refreshToken: string,
+    userAgent: string,
+  ): Promise<void> {
+    const token = await this.tokenModel.findOne({ userID, userAgent });
 
     if (token) {
       token.refreshToken = refreshToken;
       await token.save();
     } else {
-      await this.tokenModel.create({ userID, refreshToken });
+      await this.tokenModel.create({ userID, refreshToken, userAgent });
     }
   }
 
-  async generateAndSaveTokens(user: UsersDocument): Promise<ITokens> {
+  async generateAndSaveTokens(
+    user: UsersDocument,
+    userAgent: string,
+  ): Promise<ITokens> {
     const tokens = await this.generateTokens(user);
-    await this.saveTokens(user?._id + '', tokens.refreshToken);
+    await this.saveTokens(user?._id + '', tokens.refreshToken, userAgent);
 
     return tokens;
   }
@@ -154,7 +164,10 @@ export class AuthService {
     }
   }
 
-  async refresh(refreshToken: string): Promise<IAuthResponse> {
+  async refresh(
+    refreshToken: string,
+    userAgent: string,
+  ): Promise<IAuthResponse> {
     if (!refreshToken) {
       throw Errors.unauthorized();
     }
@@ -166,7 +179,7 @@ export class AuthService {
     }
 
     const user = await this.usersModel.findById(tokenData.userID);
-    const tokens = await this.generateAndSaveTokens(user);
+    const tokens = await this.generateAndSaveTokens(user, userAgent);
 
     return { tokens, user };
   }

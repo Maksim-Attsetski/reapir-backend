@@ -11,6 +11,9 @@ export class Token {
 
   @Prop({ type: MSchema.Types.ObjectId, ref: 'Users' })
   userID: Users;
+
+  @Prop({ default: '' })
+  userAgent: string;
 }
 
 export const TokenSchema = SchemaFactory.createForClass(Token);
