@@ -183,4 +183,8 @@ export class AuthService {
 
     return { tokens, user };
   }
+
+  async getTokens(): Promise<any> {
+    return await this.tokenModel.find();
+  }
 }

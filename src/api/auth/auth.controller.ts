@@ -36,6 +36,11 @@ export class AuthController {
     return this.setCookies(data, res);
   }
 
+  @Get('tokens') // TODO delete on release
+  async tokens() {
+    return await this.authService.getTokens();
+  }
+
   @Get('refresh')
   async refresh(@Req() req, @Res({ passthrough: true }) res) {
     const refreshToken = req.cookies?.refreshToken;
