@@ -13,6 +13,7 @@ import {
   ReviewsModule,
 } from 'src/api';
 import Config from './config';
+import { CasesModule } from 'src/api/cases';
 
 @Module({
   imports: [
@@ -26,6 +27,7 @@ import Config from './config';
     MongooseModule.forRoot(process.env.DB_URL),
     UsersModule,
     AuthModule,
+    CasesModule,
     NewsModule,
     PriceListModule,
     ReviewsModule,

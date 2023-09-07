@@ -3,3 +3,4 @@ export * from './auth';
 export * from './price-list';
 export * from './news';
 export * from './reviews';
+export * from './cases';

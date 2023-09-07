@@ -21,11 +21,36 @@ class FileModule {
     }
   }
 
-  async deleteFile(fileName: string) {
+  async createManyFiles(files: IFile[]): Promise<string[]> {
+    try {
+      const result = [];
+
+      files.forEach(async (file) => {
+        const name = await this.createFile(file);
+        name && result.push(name);
+      });
+
+      return result;
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async deleteFile(fileName: string): Promise<void> {
     try {
       const file = path.resolve('static', fileName);
       await fs.rm(file, (err) => {
         throw err;
+      });
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async deleteManyFiles(fileNames: string[]): Promise<void> {
+    try {
+      fileNames.forEach(async (fileName) => {
+        await this.deleteFile(fileName);
       });
     } catch (error) {
       throw error;
