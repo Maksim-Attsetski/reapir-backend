@@ -1,5 +1,5 @@
 import { InjectModel } from '@nestjs/mongoose';
-import { Injectable } from '@nestjs/common';
+import { Inject, Injectable, forwardRef } from '@nestjs/common';
 import { Model } from 'mongoose';
 import { compare, hash } from 'bcryptjs';
 
@@ -8,11 +8,13 @@ import { MongoUtils, IQuery, Errors } from 'src/utils';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { GetUserDto } from './dto/get-user.dto';
 import { Users, UsersDocument } from './users.entity';
+import { AuthService } from '../auth';
 
 @Injectable()
 export class UsersService {
   constructor(
     @InjectModel(Users.name) private userModel: Model<UsersDocument>,
+    @Inject(forwardRef(() => AuthService)) private authService: AuthService,
   ) {}
 
   async findAll(query: IQuery) {
@@ -61,6 +63,7 @@ export class UsersService {
   }
 
   async remove(id: string) {
+    await this.authService.deleteToken({ userID: id });
     return await MongoUtils.delete({
       model: this.userModel,
       id,

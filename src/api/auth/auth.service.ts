@@ -27,7 +27,7 @@ export interface IAuthResponse {
 export class AuthService {
   constructor(
     @InjectModel(Token.name) private readonly tokenModel: Model<TokenDocument>,
-    @InjectModel(Users.name) private readonly usersModel: Model<UsersDocument>,
+    @InjectModel('Users') private readonly usersModel: Model<UsersDocument>,
     @Inject(forwardRef(() => JwtService)) private jwtService: JwtService,
   ) {}
 
