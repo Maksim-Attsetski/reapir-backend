@@ -11,6 +11,12 @@ class Errors {
   unauthorized() {
     return new HttpException('You are not authorized', HttpStatus.UNAUTHORIZED);
   }
+  dublicate(obj: any) {
+    return new HttpException(
+      `Поля ${Object.keys(obj).join()} должны быть уникальными`,
+      HttpStatus.BAD_REQUEST,
+    );
+  }
   undefinedError(cause?: Error) {
     return new HttpException(
       'Unknown error',

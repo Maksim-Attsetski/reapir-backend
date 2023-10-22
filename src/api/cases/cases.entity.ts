@@ -23,13 +23,16 @@ export class Cases {
   @Prop({ required: true })
   price: number;
 
-  @Prop({ default: 'flat' })
+  @Prop({ default: 1 })
+  floors: number;
+
+  @Prop({ default: 'flat', enum: ['flat', 'house', 'cottage'] })
   type: string;
 
-  @Prop()
+  @Prop({ default: 0 })
   square: number;
 
-  @Prop()
+  @Prop({ default: 0 })
   duration: number;
 
   @Prop()

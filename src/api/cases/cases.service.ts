@@ -9,6 +9,7 @@ import { CreateCasesDto } from './dto/create-cases.dto';
 import { UpdateCasesDto } from './dto/update-cases.dto';
 import { GetCasesDto } from './dto/get-cases.dto';
 import { Cases, casesDocument } from './cases.entity';
+import errors from 'src/utils/errors';
 
 @Injectable()
 export class CasesService {
@@ -19,13 +20,21 @@ export class CasesService {
   async create(createCasesDto: CreateCasesDto, photos: IFile[]) {
     const names = await fileModule.createManyFiles(photos);
 
-    const photoObj =
-      names.length > 0 ? { preview: names[0], images: names } : {};
+    const photoObj = names.length > 0 ? { images: names } : {};
 
-    return await MongoUtils.create({
-      model: this.casesModel,
-      data: { ...createCasesDto, ...photoObj },
-    });
+    try {
+      return await MongoUtils.create({
+        model: this.casesModel,
+        data: { ...createCasesDto, ...photoObj },
+      });
+    } catch (error) {
+      await fileModule.deleteManyFiles(names);
+      if (error?.code === 11000) {
+        throw errors.dublicate(error?.keyPattern);
+      }
+
+      throw error;
+    }
   }
 
   async findAll(query: IQuery) {
@@ -45,7 +54,44 @@ export class CasesService {
     });
   }
 
-  async update(id: string, updateCasesDto: UpdateCasesDto) {
+  async update(id: string, updateCasesDto: UpdateCasesDto, files?: IFile[]) {
+    const caseItem = await MongoUtils.get({
+      model: this.casesModel,
+      error: 'Cases',
+      id,
+    });
+
+    if (
+      files &&
+      updateCasesDto?.imgAction &&
+      updateCasesDto?.imgAction === 'upload'
+    ) {
+      const newImages = await fileModule.createManyFiles(files);
+      return await MongoUtils.update({
+        model: this.casesModel,
+        error: 'Cases',
+        id,
+        data: { images: [...caseItem.images, ...newImages] },
+      });
+    }
+
+    if (
+      updateCasesDto?.images &&
+      updateCasesDto?.imgAction &&
+      updateCasesDto?.imgAction === 'delete'
+    ) {
+      await fileModule.deleteManyFiles(updateCasesDto.images);
+      const images = caseItem.images.filter(
+        (el: string) => !updateCasesDto.images.includes(el),
+      );
+      return await MongoUtils.update({
+        model: this.casesModel,
+        error: 'Cases',
+        id,
+        data: { images },
+      });
+    }
+
     return await MongoUtils.update({
       model: this.casesModel,
       error: 'Cases',

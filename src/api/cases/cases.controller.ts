@@ -24,13 +24,11 @@ export class CasesController {
   constructor(private readonly casesService: CasesService) {}
 
   @Post()
-  @UseInterceptors(FilesInterceptor('files'))
+  @UseInterceptors(FilesInterceptor('files', 10))
   async create(
-    @Body() createCasesDto: CreateCasesDto,
     @UploadedFiles() files: IFile[],
+    @Body() createCasesDto: CreateCasesDto,
   ) {
-    console.log(files);
-
     return this.casesService.create(createCasesDto, files);
   }
 
@@ -45,8 +43,13 @@ export class CasesController {
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateCasesDto: UpdateCasesDto) {
-    return this.casesService.update(id, updateCasesDto);
+  @UseInterceptors(FilesInterceptor('files', 10))
+  update(
+    @Param('id') id: string,
+    @Body() updateCasesDto: UpdateCasesDto,
+    @UploadedFiles() files?: IFile[],
+  ) {
+    return this.casesService.update(id, updateCasesDto, files);
   }
 
   @Delete(':id')
