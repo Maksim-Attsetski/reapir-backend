@@ -5,6 +5,12 @@ class Errors {
   notFound(model: string) {
     return new HttpException(model + ' was not found', HttpStatus.NOT_FOUND);
   }
+  notAccess() {
+    return new HttpException(
+      'У вас нет прав администратора',
+      HttpStatus.FORBIDDEN,
+    );
+  }
   badRequest(message: string) {
     return new HttpException(message, HttpStatus.BAD_REQUEST);
   }

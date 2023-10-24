@@ -9,6 +9,7 @@ import {
   Query,
   UseInterceptors,
   UploadedFiles,
+  UseGuards,
 } from '@nestjs/common';
 import { FilesInterceptor } from '@nestjs/platform-express';
 
@@ -18,11 +19,13 @@ import { UpdateCasesDto } from './dto/update-cases.dto';
 import { IQuery } from 'src/utils';
 
 import { IFile } from 'src/modules/files';
+import { RoleGuard } from 'src/guards';
 
 @Controller('cases')
 export class CasesController {
   constructor(private readonly casesService: CasesService) {}
 
+  @UseGuards(RoleGuard)
   @Post()
   @UseInterceptors(FilesInterceptor('files', 10))
   async create(
@@ -42,6 +45,7 @@ export class CasesController {
     return this.casesService.findOne(id);
   }
 
+  @UseGuards(RoleGuard)
   @Patch(':id')
   @UseInterceptors(FilesInterceptor('files', 10))
   update(
@@ -52,6 +56,7 @@ export class CasesController {
     return this.casesService.update(id, updateCasesDto, files);
   }
 
+  @UseGuards(RoleGuard)
   @Delete(':id')
   remove(@Param('id') id: string) {
     return this.casesService.remove(id);

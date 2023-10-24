@@ -8,7 +8,7 @@ import { AuthService } from '../auth';
 import { TokenModel } from '../auth/auth.module';
 import { JwtService } from '@nestjs/jwt';
 
-const UserModel = MongooseModule.forFeature([
+export const UserModel = MongooseModule.forFeature([
   { name: Users.name, schema: UsersSchema },
 ]);
 
