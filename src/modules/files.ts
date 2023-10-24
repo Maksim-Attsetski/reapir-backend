@@ -39,7 +39,7 @@ class FileModule {
   async deleteFile(fileName: string): Promise<void> {
     try {
       const file = path.resolve('static', fileName);
-      await fs.rm(file, (err) => console.log(err));
+      await fs.rm(file, (err) => console.error(err));
     } catch (error) {
       throw error;
     }

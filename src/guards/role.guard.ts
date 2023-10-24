@@ -18,7 +18,6 @@ export class RoleGuard implements CanActivate {
     const request = context.switchToHttp().getRequest();
 
     const splittedAuthHeader = request.headers.authorization?.split(' ');
-    console.log(splittedAuthHeader);
 
     try {
       if (!splittedAuthHeader[1] || splittedAuthHeader[0] !== 'Bearer') {
@@ -27,14 +26,10 @@ export class RoleGuard implements CanActivate {
       const data = this.jwtService.verify(splittedAuthHeader[1], {
         secret: Config.accessSecret,
       });
-      console.log(data);
-
       if (!data) throw errors.unauthorized();
       request.user = data;
 
       const userFromDb = await this.usersModel.findById(data?._id);
-      console.log(userFromDb);
-
       if (!userFromDb) throw errors.unauthorized();
 
       if (userFromDb.role !== 'admin') throw errors.notAccess();
