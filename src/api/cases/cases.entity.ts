@@ -18,7 +18,7 @@ export class Cases {
   images: string[];
 
   @Prop({ default: [] })
-  tag: string[];
+  tags: string[];
 
   @Prop({ required: true })
   price: number;

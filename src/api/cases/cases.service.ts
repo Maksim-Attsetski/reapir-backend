@@ -61,18 +61,21 @@ export class CasesService {
       id,
     });
 
+    const updateOne = async (data: any) => {
+      const result = await this.casesModel.updateOne({ _id: id }, data);
+      const updatedItem = await this.casesModel.findById(id);
+
+      if (!result || !updatedItem) throw Errors.notFound('Case');
+      return updatedItem;
+    };
+
     if (
       files &&
       updateCasesDto?.imgAction &&
       updateCasesDto?.imgAction === 'upload'
     ) {
       const newImages = await fileModule.createManyFiles(files);
-      return await MongoUtils.update({
-        model: this.casesModel,
-        error: 'Cases',
-        id,
-        data: { images: [...caseItem.images, ...newImages] },
-      });
+      return await updateOne({ images: [...caseItem.images, ...newImages] });
     }
 
     if (
@@ -84,20 +87,10 @@ export class CasesService {
       const images = caseItem.images.filter(
         (el: string) => !updateCasesDto.images.includes(el),
       );
-      return await MongoUtils.update({
-        model: this.casesModel,
-        error: 'Cases',
-        id,
-        data: { images },
-      });
+      return await updateOne({ images });
     }
 
-    return await MongoUtils.update({
-      model: this.casesModel,
-      error: 'Cases',
-      id,
-      data: updateCasesDto,
-    });
+    return await updateOne(updateCasesDto);
   }
 
   async remove(id: string) {

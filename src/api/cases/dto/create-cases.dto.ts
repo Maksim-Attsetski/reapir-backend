@@ -1,7 +1,7 @@
 export class CreateCasesDto {
   title: string;
   description: string;
-  tag: string[];
+  tags: string[];
   address: string;
   images: string[];
   price: number;

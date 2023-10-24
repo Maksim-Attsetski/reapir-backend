@@ -9,7 +9,7 @@ export class GetCasesDto extends CreateCasesDto {
 
     this.title = model?.title;
     this.description = model?.description;
-    this.tag = model?.tag;
+    this.tags = model?.tags;
     this.address = model?.address;
     this.duration = model?.duration;
     this.images = model?.images;
