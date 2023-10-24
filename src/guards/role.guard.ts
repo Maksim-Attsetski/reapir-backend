@@ -10,7 +10,8 @@ import errors from 'src/utils/errors';
 export class RoleGuard implements CanActivate {
   constructor(
     private jwtService: JwtService,
-    @InjectModel(Users.name) private usersModel: Model<UsersDocument>,
+    @InjectModel(Users?.name ?? 'Users')
+    private usersModel: Model<UsersDocument>,
   ) {}
 
   async canActivate(context: ExecutionContext): Promise<boolean> {

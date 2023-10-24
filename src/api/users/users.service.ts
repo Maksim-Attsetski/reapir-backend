@@ -9,6 +9,7 @@ import { UpdateUserDto } from './dto/update-user.dto';
 import { GetUserDto } from './dto/get-user.dto';
 import { Users, UsersDocument } from './users.entity';
 import { AuthService } from '../auth';
+import errors from 'src/utils/errors';
 
 @Injectable()
 export class UsersService {
@@ -34,7 +35,12 @@ export class UsersService {
     });
   }
 
-  async update(id: string, updateUserDto: UpdateUserDto) {
+  async update(id: string, updateUserDto: UpdateUserDto, senderId?: string) {
+    if (updateUserDto?.role === 'admin') {
+      const sender = await this.userModel.findById(senderId);
+      if (sender.role !== 'admin') throw errors.notAccess();
+    }
+
     return await MongoUtils.update({
       model: this.userModel,
       id,
