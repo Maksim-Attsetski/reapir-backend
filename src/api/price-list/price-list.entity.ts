@@ -14,8 +14,11 @@ export class PriceList {
   @Prop({ required: true })
   unitOfMeasure: string;
 
-  @Prop()
+  @Prop({ default: '' })
   description: string;
+
+  @Prop({ required: true })
+  type: string;
 
   @Prop()
   createdAt: number;

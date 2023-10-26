@@ -3,4 +3,5 @@ export class CreatePriceListDto {
   description: string;
   price: number;
   unitOfMeasure: string;
+  type: string;
 }

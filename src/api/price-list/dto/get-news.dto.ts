@@ -11,6 +11,8 @@ export class GetPriceListDto extends UpdatePriceListDto {
     this.description = model?.description;
     this.price = model?.price;
     this.unitOfMeasure = model?.unitOfMeasure;
+    this.type = model?.type;
+
     this._id = model?._id;
     this.createdAt = model?.createdAt;
   }
