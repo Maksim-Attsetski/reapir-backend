@@ -4,7 +4,7 @@ import { Strategy, VerifyCallback } from 'passport-google-oauth20';
 import { Injectable } from '@nestjs/common';
 
 const redirect = process.env.SITE_URL + '/redirect/google';
-const callbackURL = process.env.DB_URL + '/api/auth/google/redirect';
+const callbackURL = process.env.SERVER_URL + '/api/auth/google/redirect';
 
 @Injectable()
 export class GoogleStrategy extends PassportStrategy(Strategy, 'google') {
