@@ -19,8 +19,6 @@ export class GoogleStrategy extends PassportStrategy(Strategy, 'google') {
   }
 
   authorizationParams(options: any): object {
-    console.log(options);
-
     return {
       ...options,
       response_type: 'code',
@@ -36,7 +34,6 @@ export class GoogleStrategy extends PassportStrategy(Strategy, 'google') {
     done: VerifyCallback,
   ): Promise<any> {
     const { name, emails, photos } = profile;
-    console.log(profile);
 
     const user = {
       email: emails[0].value,
