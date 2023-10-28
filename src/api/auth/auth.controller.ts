@@ -98,7 +98,8 @@ export class AuthController {
       );
 
       res.redirect(
-        `http://localhost:3000/redirect/google?email=${req?.user?.email ?? ''}`,
+        process.env.SITE_URL +
+          `/redirect/google?email=${req?.user?.email ?? ''}`,
       );
     } catch (error) {
       console.log(error);
