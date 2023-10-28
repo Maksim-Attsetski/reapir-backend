@@ -13,6 +13,8 @@ export class GetUserDto extends UpdateUserDto {
     this.first_name = model?.first_name;
     this.last_name = model?.last_name;
     this.password = model?.password;
+    this.providers = model?.providers;
+
     this.phone = model?.phone;
     this.role = model?.role;
   }

@@ -1,8 +1,17 @@
-import { Controller, Post, Body, Res, Get, Req } from '@nestjs/common';
-import { Errors } from 'src/utils';
+import {
+  Controller,
+  Post,
+  Body,
+  Res,
+  Get,
+  Req,
+  UseGuards,
+} from '@nestjs/common';
+import { AuthGuard as NestAuthGuard } from '@nestjs/passport';
 
-import { AuthService, IAuthResponse } from './auth.service';
+import { Errors } from 'src/utils';
 import { LoginUserDto, CreateUserDto } from 'src/api';
+import { AuthService, IAuthResponse } from './auth.service';
 
 @Controller('auth')
 export class AuthController {
@@ -65,17 +74,36 @@ export class AuthController {
     return this.setCookies(data, res);
   }
 
-  @Post('google')
-  async authByGoogle(
-    @Body() { credential }: { credential: string },
-    @Req() req: Request,
-    @Res({ passthrough: true }) res,
-  ) {
-    const data: IAuthResponse = await this.authService.authByGoogle(
-      credential,
-      req.headers['user-agent'],
-    );
-    return this.setCookies(data, res);
+  @Get('google')
+  @UseGuards(NestAuthGuard('google'))
+  async googleAuth() {
+    return 'success';
+  }
+
+  @Get('google/redirect')
+  @UseGuards(NestAuthGuard('google'))
+  async authByGoogle(@Req() req: any, @Res() res: any) {
+    try {
+      if (!req.user || !req?.query?.code) return 'No user from google';
+      const user = req?.user as any;
+
+      await this.authService.signup(
+        {
+          email: user?.email,
+          first_name: user?.first_name,
+          last_name: user?.last_name,
+          providers: ['google'],
+        },
+        req.headers['user-agent'] ?? 'google-account',
+      );
+
+      res.redirect(
+        `http://localhost:3000/redirect/google?email=${req?.user?.email ?? ''}`,
+      );
+    } catch (error) {
+      console.log(error);
+      throw new Error(error);
+    }
   }
 
   @Get('logout')

@@ -7,6 +7,7 @@ import { UsersModule } from 'src/api';
 import { AuthService } from './auth.service';
 import { AuthController } from './auth.controller';
 import { TokenSchema, Token } from './auth.entity';
+import { GoogleStrategy } from './strategy/google';
 
 export const TokenModel = MongooseModule.forFeature([
   { name: Token.name, schema: TokenSchema },
@@ -15,7 +16,7 @@ export const TokenModel = MongooseModule.forFeature([
 @Module({
   imports: [JwtModule, TokenModel, forwardRef(() => UsersModule)],
   controllers: [AuthController],
-  providers: [AuthService],
+  providers: [AuthService, GoogleStrategy],
   exports: [TokenModel, AuthService],
 })
 export class AuthModule {}

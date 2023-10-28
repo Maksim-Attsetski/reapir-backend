@@ -1,4 +1,5 @@
 export class LoginUserDto {
   email: string;
-  password: string;
+  password?: string;
+  providers: string[];
 }

@@ -32,15 +32,36 @@ export class AuthService {
   ) {}
 
   async signup(
-    { email, first_name, last_name, password, role }: SignupDto,
+    { email, first_name, last_name, password, role, providers }: SignupDto,
     userAgent: string,
   ): Promise<IAuthResponse> {
     const emailIsExist = await this.usersModel.findOne({ email });
 
-    if (emailIsExist)
-      throw Errors.badRequest('User with this email already exists');
+    if (emailIsExist) {
+      if (emailIsExist.providers.includes((providers[0] as any) ?? 'pass')) {
+        if (providers[0] === 'google') {
+          const tokens = await this.generateAndSaveTokens(
+            emailIsExist,
+            userAgent,
+          );
+          return { user: emailIsExist, tokens };
+        }
+        throw Errors.badRequest('User with this email already exists');
+      }
 
-    const hashPassword = await hash(password, 7);
+      const updatedUser = await this.usersModel.findOneAndUpdate(
+        emailIsExist._id,
+        {
+          providers: [
+            ...new Set(emailIsExist.providers.concat(providers as any[])),
+          ],
+        },
+      );
+      const tokens = await this.generateAndSaveTokens(updatedUser, userAgent);
+      return { user: updatedUser, tokens };
+    }
+
+    const hashPassword = password ? await hash(password, 7) : '';
     const createdUser = await this.usersModel.create({
       email,
       first_name,
@@ -48,41 +69,13 @@ export class AuthService {
       password: hashPassword,
       role: role ?? 'user',
       phone: '',
-      providers: ['pass'],
+      providers: providers ?? ['pass'],
       createdAt: Date.now(),
     });
 
     const tokens = await this.generateAndSaveTokens(createdUser, userAgent);
 
     return { user: createdUser, tokens };
-  }
-
-  async authByGoogle(
-    credential: string,
-    userAgent: string,
-  ): Promise<IAuthResponse> {
-    const userData: any = this.jwtService.decode(credential);
-
-    if (!userData?.email) throw Errors.undefinedError();
-    const emailIsExist = await this.usersModel.findOne({
-      email: userData?.email,
-    });
-
-    let user = emailIsExist;
-
-    if (!emailIsExist) {
-      user = await this.usersModel.create({
-        email: userData?.email,
-        name: userData?.name || '',
-        providers: ['google'],
-        createdAt: Date.now(),
-      });
-    }
-
-    if (!user && !emailIsExist) return;
-
-    const tokens = await this.generateAndSaveTokens(user, userAgent);
-    return { user, tokens };
   }
 
   async login(
@@ -92,7 +85,10 @@ export class AuthService {
     const user = await this.usersModel.findOne({ email: loginDto.email });
 
     if (!user) throw Errors.notFound('User');
-    if (!user?.password) throw Errors.badRequest('Try another sign in method');
+    if (user?.providers?.includes?.('google')) {
+      const tokens = await this.generateAndSaveTokens(user, userAgent);
+      return { user, tokens };
+    }
 
     const isPassEqual = await compare(loginDto.password, user?.password);
     if (!isPassEqual) throw Errors.badRequest('Password is wrong');
